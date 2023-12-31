@@ -1,14 +1,12 @@
 #Base
-from datetime import datetime
 import numpy as np
 from queue import Queue
 # Video processing
 import cv2
 #Networking
-from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
-from fastapi.encoders import jsonable_encoder
+from fastapi import FastAPI, Request
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
-from fastapi.templating import Jinja2Templates
 import json
 import uvicorn
 
@@ -24,27 +22,24 @@ placeholder = cv2.imread("placeholder.jpg")
 
 width, height= 1280, 720
 
-templates = Jinja2Templates(directory="templates")
+frame_buffer.put(placeholder)
  
 app = FastAPI()
 
 # FastAPI
 @app.get('/')
 def index(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+    return StreamingResponse(stream_video(), media_type="multipart/x-mixed-replace;boundary=frame")
 
-@app.websocket("/ws")
-async def stream_video(websocket: WebSocket):
-    await websocket.accept()
-    global frame_buffer
+def stream_video():
     try:
-        await websocket.send_text("Frame")
-        if frame_buffer.empty():
-            await websocket.send_bytes(placeholder.tobytes())
-        else:
-            await websocket.send_bytes(frame_buffer.get())
-    except WebSocketDisconnect:
-        print("Client disconnected")   
+        while frame_buffer:
+            yield (b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' +
+                   bytearray(frame_buffer.get()) + b'\r\n')
+    except GeneratorExit:
+        print("cancelled")
+
+
 
 @app.post("/video")
 async def video_feed(payload: Img):
@@ -64,7 +59,6 @@ async def video_feed(payload: Img):
 
     if status:
         frame_buffer.put(frame.tobytes())
-       
     else:
         print("Image encoding failed")
     

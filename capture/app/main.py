@@ -26,7 +26,7 @@ def process_video(source):
                     ,"data":json.dumps(frame.tolist())
                     }
             resp = requests.post(url=url, json=req) 
-            print(f'{req["timestamp"]}Recived answer from PaddleOCR service: {resp.json()["message"]} on {datetime.now().isoformat()}')
+            print(f'{req["timestamp"]}Recived answer from server: {resp.json()["message"]} on {datetime.now().isoformat()}')
     print("The video source ended")  
 
 print("Start initialization process\nParse arguments")
