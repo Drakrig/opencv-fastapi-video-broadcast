@@ -22,7 +22,7 @@ placeholder = cv2.imread("placeholder.jpg")
 
 width, height= 1280, 720
 
-frame_buffer.put(placeholder)
+frame_buffer.put(cv2.imencode(".jpg", placeholder)[1].tobytes())
  
 app = FastAPI()
 
