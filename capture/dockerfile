@@ -1,0 +1,12 @@
+FROM python:3.9.18-slim
+
+COPY ./requirements.txt requirements.txt
+
+RUN pip install --no-cache-dir -r requirements.txt
+
+WORKDIR /app
+
+COPY ./app/* /app
+
+ENTRYPOINT ["python3", "main.py"]
+CMD ["--destination", "10.10.10.1:8000"]

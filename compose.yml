@@ -1,0 +1,30 @@
+version: "3"
+
+services:
+  streamer:
+    build: 
+        context: ./streamer/
+        dockerfile: dockerfile
+    ports:
+      - "80:80"
+      - "8080:8000"
+    volumes:
+      - "./streamer/app/:/app/"
+    networks:
+      - fastapi
+
+  capture:
+    build: 
+      context: ./capture/
+      dockerfile: dockerfile
+    volumes: 
+      - "~/Videos/:/mnt/"
+      - "./capture/app/:/app/"
+    command: --source /mnt/test.mp4 --destination 10.10.10.3:80
+    networks:
+      - fastapi
+
+networks:
+  fastapi:
+    name: fastapi
+    external: true
