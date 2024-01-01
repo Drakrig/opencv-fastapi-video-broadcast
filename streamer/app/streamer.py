@@ -50,7 +50,6 @@ class Streamer(threading.Thread):
                     data = b''
                     while len(data) < msg_size:
                         missing_data = conn.recv(msg_size - len(data))
-                        print(len(missing_data))
                         if missing_data:
                             data += missing_data
                         else:
