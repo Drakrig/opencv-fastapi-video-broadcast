@@ -31,4 +31,4 @@ I take code for `streamer.py` and `index.html` from this great guy `https://gith
 
 ## Licence 
 
-Code and documentation released under the [MIT License](https://github.com/Drakrig/opencv-fastapi-video-broadcast/blob/master/LICENSE)
+Code and documentation released under the [MIT License](https://github.com/Drakrig/opencv-fastapi-video-broadcast/blob/master/LICENCE)
