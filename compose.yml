@@ -7,7 +7,7 @@ services:
         dockerfile: dockerfile
     ports:
       - "80:80"
-      - "8080:8000"
+      - "8080:8080"
     volumes:
       - "./streamer/app/:/app/"
     networks:
@@ -20,7 +20,7 @@ services:
     volumes: 
       - "~/Videos/:/mnt/"
       - "./capture/app/:/app/"
-    command: --source /mnt/test.mp4 --destination 10.10.10.2:80
+    command: --source /mnt/test.mp4 --destination 10.10.10.2:8080
     depends_on:
       - streamer
     networks:
