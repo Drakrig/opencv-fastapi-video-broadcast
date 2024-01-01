@@ -1,16 +1,16 @@
 #Base things
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import os
-from datetime import datetime
 from time import sleep
-import asyncio
+import struct
+from io import BytesIO
 # Video processing
+import numpy as np
 import cv2
 # Networking
-import json
-import requests
+import socket
 
-def process_video(source):
+async def process_video(source):
     print("Conect to source")
     cap = cv2.VideoCapture(source)
     ret, frame = cap.read()
@@ -23,10 +23,12 @@ def process_video(source):
         if ret:
             # Do fancy stuff to frame
             # But we just send
-            req = {  "timestamp":datetime.now().isoformat()
-                    ,"data":json.dumps(frame.tolist())
-                    }
-            resp = requests.post(url=url, json=req) 
+            #Taken from https://github.com/codectl/remote-opencv-streaming-live-video/blob/master/client.py
+            memfile = BytesIO()
+            np.save(memfile, frame)
+            memfile.seek(0)
+            data = memfile.read()
+            client_socket.sendall(struct.pack("L", len(data)) + data)
             
     print("The video source ended")  
 
@@ -38,24 +40,28 @@ parser.add_argument("-src","--source", default="", help="Source for video")
 parser.add_argument("-sf", "--skip_frames", type=int, default=0, help="How many frames skip in process to increase speed")
 parser.add_argument("-dst","--destination", default="", help="Destination IP address with port")
 
+
 args = vars(parser.parse_args())
 
 source = args["source"]
 skip_frames=args["skip_frames"]
-destination = args["destination"]
+destination, port = args["destination"].split(":")
 
 # Initialization 10.10.10.1:80/video
-url = f'http://{destination}/video'
+url = f'http://{destination}'
+
+client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 print("Connect to server")
 sleep(10)
 while True:
     try:
-        resp = requests.get(url=f"http://{destination}/status")
+        client_socket.connect((url, port))
         break
     except:
         print("Server not awaliable")
         sleep(1)
 print("Start main working process")
+#asyncio.run(process_video(source))
 process_video(source)
 
