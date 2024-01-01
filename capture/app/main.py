@@ -6,7 +6,6 @@ import struct
 from io import BytesIO
 # Video processing
 import numpy as np
-import cv2
 # Networking
 import socket
 
@@ -40,7 +39,6 @@ parser.add_argument("-src","--source", default="", help="Source for video")
 parser.add_argument("-sf", "--skip_frames", type=int, default=0, help="How many frames skip in process to increase speed")
 parser.add_argument("-dst","--destination", default="", help="Destination IP address with port like address:port")
 
-
 args = vars(parser.parse_args())
 
 source = args["source"]
@@ -60,6 +58,4 @@ while True:
         print("Server not awaliable")
         sleep(1)
 print("Start main working process")
-#asyncio.run(process_video(source))
 process_video(source, client_socket)
-
