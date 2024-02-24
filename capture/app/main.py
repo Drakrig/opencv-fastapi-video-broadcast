@@ -6,6 +6,7 @@ import struct
 from io import BytesIO
 # Video processing
 import numpy as np
+import cv2
 # Networking
 import socket
 
